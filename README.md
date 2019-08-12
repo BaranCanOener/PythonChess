@@ -1,6 +1,8 @@
 # PythonChess
-A chess game written in Python 3.7. Includes a simple engine supporting alpha-beta-pruning, iterative deepening and quiescence searches. 
+*Description.* A chess game written in Python 3.7. Includes a simple engine supporting alpha-beta-pruning, iterative deepening and quiescence searches. 
 ASCII-based output is handled on the Python terminal.
+
+*Next steps.* The castling and en passant-routines could probably be shortened and/or made more efficient, along with other improvements to the codebase. As far as completely new features like transposition tables go, I will probably reserve them for a translation to C++.
 
 Command List:
 * 'PQ XY' moves the piece on PQ to XY (e.g. e2 e4)
