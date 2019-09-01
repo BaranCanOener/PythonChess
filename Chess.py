@@ -289,7 +289,7 @@ class Engine:
     #Method used to print the current search progress,
     #and to abort the search if the prescribed time limit is exceeded
     def updateSearchProgress(self, alpha, beta):
-        if self.nodes % 100 == 0:
+        if self.nodes % 1000 == 0:
             s = ''
             i = 0
             for move in self.currentTurnSequence:
@@ -319,7 +319,7 @@ class ChessBoard:
     kingWhiteLocation = [4,0] #Keep Track of the King's location for more efficient checks
     kingBlackLocation = [4,7]
     enPassantPawn = [-1,-1] #stores the coordinate of a pawn allowing for an en passant capture
-    allowIllegalMoves = False #The engine is allowed to
+    allowIllegalMoves = False #The engine is allowed to perform self-checking moves
     
     def resetBoard(self):
         self.squares = []
@@ -1303,10 +1303,13 @@ class ChessGame:
             #Handles the detection of a check/checkmate an               
             if colour == Colour.White: 
                 print("("+str(moveCounter)+")"+" White's turn.")
-                if self.board.generateMoveList(Colour.White) == []:
-                    print("White is checkmate after "+str(moveCounter)+" turns! See all potential moves of black:")
-                    self.printBoard(self.getAllMoves(Colour.Black),None,printInColour)
-                    blackWinCounter = blackWinCounter + 1
+                if (self.board.generateMoveList(Colour.White) == []):
+                    if self.board.isColourCheck(Colour.White):
+                        print("White is checkmate after "+str(moveCounter)+" turns! See all potential moves of black:")
+                        self.printBoard(self.getAllMoves(Colour.Black),None,printInColour)
+                        blackWinCounter = blackWinCounter + 1
+                    else:
+                        print("The game ended in a draw.")
                     gameCounter = gameCounter + 1
                     print("Wins of white: " + str(whiteWinCounter) + ", wins of black: " + str(blackWinCounter))
                     print("Resetting board.")
@@ -1314,20 +1317,23 @@ class ChessGame:
                     moveCounter = 0
                     colour = Colour.White
                     if (command == "engine_loop ") and (gameCounter == maxEngineGames):
-                        print("Game cap of 10 reached.")
+                        print("Game cap of " + str(maxEngineGames) + " reached.")
                         gameCounter = 0
                         whiteWinCounter = 0
                         blackWinCounter = 0
-                        command = ""
+                        command = ""    
                     self.printBoard(None,None,printInColour)
                 elif self.board.isColourCheck(Colour.White):
                     print("White is checked!")       
             else:
                 print("("+str(moveCounter)+")"+" Black's turn.")
-                if self.board.generateMoveList(Colour.Black) == []:
-                    print("Black is checkmate after "+str(moveCounter)+" turns! See all potential moves of white:")
-                    self.printBoard(self.getAllMoves(Colour.White),None,printInColour)
-                    whiteWinCounter = whiteWinCounter + 1
+                if (self.board.generateMoveList(Colour.Black) == []):
+                    if self.board.isColourCheck(Colour.Black):
+                        print("Black is checkmate after "+str(moveCounter)+" turns! See all potential moves of white:")
+                        self.printBoard(self.getAllMoves(Colour.White),None,printInColour)
+                        whiteWinCounter = whiteWinCounter + 1
+                    else:
+                        print("The game ended in a draw.")
                     gameCounter = gameCounter + 1
                     print("Wins of white: " + str(whiteWinCounter) + ", wins of black: " + str(blackWinCounter))
                     print("Resetting board.")
@@ -1344,7 +1350,6 @@ class ChessGame:
                 elif self.board.isColourCheck(Colour.Black):
                     print("Black is checked!")
                 
- 
             rnd = engine.randomness
             engine.randomness = False
             print("Heuristic Valuation       : " + str(engine.evaluatePositionAlphaBeta(self.board)))
